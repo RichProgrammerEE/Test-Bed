@@ -1,25 +1,44 @@
 #include <iostream>
+#include <memory>
+#include <thread>
+#include <chrono>
+#include <mutex>
 
-class Base
-{
-public:
-    Base() { std::cout << "Constructing Base Class!\n"; }
-
-    virtual void print() { std::cout << "Printing from Base Class!\n"; }
+struct Base {
+    Base() { std::cout << "  Base::Base()\n"; }
+    // Note: non-virtual destructor is OK here
+    ~Base() { std::cout << "  Base::~Base()\n"; }
 };
 
-class Child : public Base
-{
-public:
-    Child() { std::cout << "Constructing Child Class!\n"; }
-
-    virtual void print() override { std::cout << "Printing from Child Class!\n"; }
+struct Derived : public Base {
+    Derived() { std::cout << "  Derived::Derived()\n"; }
+    ~Derived() { std::cout << "  Derived::~Derived()\n"; }
 };
 
-int main()
-{
-    std::cout << "Hello World!" << std::endl;
-    Child child;
-    Base* p_base = &child;
-    p_base->print();
+void thr(std::shared_ptr<Base> p) {
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    std::shared_ptr<Base> lp = p; // thread-safe, even though the
+                                  // shared use_count is incremented
+    {
+        static std::mutex io_mutex;
+        std::lock_guard<std::mutex> lk(io_mutex);
+        std::cout << "local pointer in a thread:\n"
+                  << "  lp.get() = " << lp.get() << ", lp.use_count() = " << lp.use_count() << '\n';
+    }
+}
+
+int main() {
+    std::shared_ptr<Base> p = std::make_shared<Derived>();
+
+    std::cout << "Created a shared Derived (as a pointer to Base)\n"
+              << "  p.get() = " << p.get() << ", p.use_count() = " << p.use_count() << '\n';
+    std::thread t1(thr, p), t2(thr, p), t3(thr, p);
+    p.reset(); // release ownership from main
+    std::cout << "Shared ownership between 3 threads and released\n"
+              << "ownership from main:\n"
+              << "  p.get() = " << p.get() << ", p.use_count() = " << p.use_count() << '\n';
+    t1.join();
+    t2.join();
+    t3.join();
+    std::cout << "All threads completed, the last one deleted Derived\n";
 }

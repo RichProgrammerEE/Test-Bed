@@ -1,3 +1,4 @@
 bin/*
 bin_int/*
 Makefile
+clang-format-files

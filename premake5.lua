@@ -29,6 +29,7 @@ project "TestBed"
 
     links
     {
+        "pthread"
     }
 
 
