@@ -1,30 +1,39 @@
-#include <iostream>
-#include <thread>
-#include <algorithm>
-#include <mutex>
-#include <condition_variable>
+#include<iostream>
+#include<vector>
+using namespace std;
 
-bool is_ready{ false };
-std::mutex m;
-std::condition_variable cv;
-
-void func()
-{
-    std::this_thread::sleep_for(std::chrono::seconds(3));
-    std::unique_lock<std::mutex> lk(m);
-    is_ready = true;
-    cv.notify_one();
+void SplitString(string s, vector<string> &v){
+	
+	string temp = "";
+	for(int i=0;i<s.length();++i){
+		
+		if(s[i]==' '){
+			v.push_back(temp);
+			temp = "";
+		}
+		else{
+			temp.push_back(s[i]);
+		}
+		
+	}
+	v.push_back(temp);
+	
 }
 
-int main() {
-    std::thread t(func);
-    std::unique_lock<std::mutex> lk(m);
-    while(!is_ready) {
-        cv.wait(lk);
-        if(!is_ready)
-            std::cout << "Spurious wake up!\n";
-    }
-    t.join();
-    std::cout << "Exiting main function!" << std::endl;
-    return 0;
+template<typename T>
+void PrintVector(vector<T> v){
+	for(int i=0;i<v.size();++i)
+		cout<<v[i]<<endl;
+	cout<<"\n";
+}
+
+int main()
+{
+	vector<string> v;
+	string s = "Hello! My name is John Smith.";
+	cout<<"Input String: "<<endl<<s<<endl;
+	SplitString(s, v);
+	cout<<"String After Split"<<endl;
+	PrintVector(v);
+	
 }
