@@ -4,44 +4,70 @@
 
 using namespace std;
 
-void incrementA(int* a)
+class OwnedObject
 {
-    int tmp = *a;
-    tmp = tmp + 1;
-    *a = tmp;
-}
+public:
+    OwnedObject(const std::string& message) :
+    _message(message)
+    {
+        std::cout << "Constructing OwnedObject class, message(" << message << ")\n";
+    }
 
-void changeA(int* a)
+    ~OwnedObject()
+    {
+        std::cout << "Deconstructing OwnedObject class, message(" << _message << ")\n";
+    }
+private:
+    std::string _message;
+};
+
+class Parent
 {
-    if(*a == -1)
-        *a = 10;
-}
+public:
+    Parent() :
+    _ownedObj("Parent Class")
+    {
+        std::cout << "Constructing Parent class\n";
+    }
+
+    ~Parent()
+    {
+       std::cout << "Deconstructing Parent class\n"; 
+    }
+
+    virtual void print()
+    {
+        std::cout << "Printing from Parent class\n";
+    }
+private:
+    OwnedObject _ownedObj;
+};
+
+class Child : public Parent
+{
+public:
+    Child() :
+    Parent(),
+    _ownedObj("Child Class")
+    {
+        std::cout << "Constructing Child class\n";
+    }
+
+    ~Child()
+    {
+       std::cout << "Deconstructing Child class\n"; 
+    }
+
+    virtual void print() override
+    {
+        std::cout << "Printing from Child class\n";
+    }
+private:
+    OwnedObject _ownedObj;
+};
 
 int main()
 {
-    vector<size_t> results{ 0, 0, 0, 0};
-    for(size_t i = 0; i < 10000; ++i) {
-        int a = -1;
-        std::thread second(changeA, &a);
-        std::thread first(incrementA, &a);
-        // synchronize threads:
-        first.join();
-        second.join();
-        if(a == 0)
-            results[0] += 1;
-        else if(a == 10)
-            results[1] += 1;
-        else if(a == 11)
-            results[2] += 1;
-        else
-            results[3] += 1;
-    }
-
-    cout << "Value of A:\n"
-         << "0: " << results[0] << " times" << "\n"
-         << "10: " << results[1] << " times" << "\n"
-         << "11: " << results[2] << " times" << "\n"
-         << "Unknown: " << results[3] << " times" << endl;
-
+    auto c = Child();
     return 0;
 }
