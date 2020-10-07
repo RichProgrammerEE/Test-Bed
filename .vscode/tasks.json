@@ -78,8 +78,8 @@
         {
             "label": "Clean Projects (Release)",
             "type": "shell",
-            "command": "make clean",
-            "args": ["config=release"],
+            "command": "make",
+            "args": ["clean", "config=release"],
             "group": {
                 "kind": "build",
                 "isDefault": true
