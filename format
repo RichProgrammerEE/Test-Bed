@@ -33,7 +33,8 @@ files="${files} $(find testBed/include/ -iname '*.h' -o -iname '*.cpp')"
 for file in $files
 do
     echo -e "${IBlu}Formatting file:${RCol} ${IYel}${file}${RCol}"
-    /usr/bin/clang-format-9 -i -style=file ${file}
+    /usr/bin/clang-format -i -style=file ${file}
 done
 
-echo ${files} >> clang-format-files
+# Use this to debug which files are being formatted
+# echo ${files} >> clang-format-files

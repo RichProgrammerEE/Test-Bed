@@ -10,28 +10,6 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal"
-        },
-        {
-            "name": "(gdb) Launch",
-            "type": "cppdbg",
-            "request": "launch",
-            "preLaunchTask": "Compile (Debug)",
-            "program": "${workspaceFolder}/bin/Debug_linux_x86_64/TestBed/TestBed",
-            "args": [],
-            //"logging": { "trace": true, "traceResponse": true },
-            //"additionalSOLibSearchPath": "${workspaceFolder}",
-            "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
-            "environment": [],
-            "externalConsole": false,
-            "MIMode": "gdb",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty-printing for gdb",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ]
         }
     ]
 }
